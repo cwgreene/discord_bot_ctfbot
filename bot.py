@@ -14,8 +14,8 @@ class MyClient(discord.Client):
 
     async def on_message(self, message):
         print('Message from {0.author}: {0.content}'.format(message))
-        if message.content.startswith("!describe") and message.author != NAME:
-            category_m = re.findall("!describe ([a-zA-Z0-9-]+)", message.content)
+        if message.content.startswith("!mkactive") and message.author != NAME:
+            category_m = re.findall("!mkactive ([a-zA-Z0-9-]+)", message.content)
             if len(category_m) < 1:
                 return
             category_name = category_m[0]
