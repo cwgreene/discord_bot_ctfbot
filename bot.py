@@ -15,13 +15,12 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         print('Message from {0.author}: {0.content}'.format(message))
         if message.content.startswith("!mkactive") and message.author != NAME:
-            category_m = re.findall("!mkactive ([a-zA-Z0-9-]+)", message.content)
+            category_m = re.findall("!mkactive ([^ ]+)", message.content)
             if len(category_m) < 1:
                 return
             category_name = category_m[0]
             for category in message.guild.categories:
-                print(category.name)
-                if category.name == category_name:
+                if category_name.lower() in category.name.lower():
                     print("category object", repr(category))
                     result = await category.edit(position=1)
         elif message.content.startswith("!solved") and message.author != NAME:
@@ -33,6 +32,6 @@ class MyClient(discord.Client):
             if name.startswith("✅-"):
                 result = await message.channel.edit(name=name[2:])
         elif message.content.startswith("!help") and message.author != NAME:
-            result = await message.channel.send("Commands supported: !help, !unsolved, !solved")
+            result = await message.channel.send("Commands supported: !help, !unsolved, !solved, !mkactive")
 client = MyClient()
 client.run(BOT_TOKEN)
