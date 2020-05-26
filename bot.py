@@ -8,6 +8,28 @@ import re
 BOT_TOKEN = supersecret.getSecret('discord_bot_ctfbot', 'bot_token')
 
 NAME = "ctfbot#9398"
+
+def canonical_name(name):
+    cname = ""
+    for char in name:
+        if re.match("[A-Za-z0-9-+]", char):
+            if len(cname) > 0 or char != "-":
+                cname += char
+    return cname
+
+def permission_name(ctfname, challenge):
+    ctfname = canonical_name(ctfname)
+    challenge_name = canonical_name(challenge)
+    permission = ctfname + "-" + challenge_name
+    return permission
+
+def find_role(roles, name):
+	print("looking for", name)
+	for role in roles:
+		print(role.name)
+		if role.name == name:
+			return role
+
 class MyClient(discord.Client):
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
@@ -33,5 +55,33 @@ class MyClient(discord.Client):
                 result = await message.channel.edit(name=name[2:])
         elif message.content.startswith("!help") and message.author != NAME:
             result = await message.channel.send("Commands supported: !help, !unsolved, !solved, !mkactive")
+        elif message.content.startswith("!mkchallenge") and message.author != NAME:
+            new_challenge_m = re.findall("!mkchallenge ([^ ]+)", message.content)
+            if len(new_challenge_m) < 1:
+                return
+            new_challenge = canonical_name(new_challenge_m[0])
+            active_ctf = message.guild.categories[1]
+            for challenge in active_ctf.text_channels:
+                if new_challenge.lower() == canonical_name(challenge.name).lower():
+                    return
+            result = await active_ctf.create_text_channel(new_challenge)
+            result = await message.guild.create_role(
+                                name=permission_name(active_ctf.name, new_challenge),
+                                color=discord.Color(0xffff00))
+        elif message.content.startswith("!workingon"):
+            user = message.author
+            challenge = canonical_name(message.channel.name)
+            active_ctf = message.channel.category
+            role = find_role(message.guild.roles,
+                              permission_name(active_ctf.name, challenge))
+            result = await user.add_roles(role)
+        elif message.content.startswith("!stopworking"):
+            user = message.author
+            challenge = canonical_name(message.channel.name)
+            active_ctf = message.channel.category
+            role = find_role(message.guild.roles,
+                              permission_name(active_ctf.name, challenge))
+            result = await user.remove_roles(role)
+             
 client = MyClient()
 client.run(BOT_TOKEN)
