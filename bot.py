@@ -24,11 +24,16 @@ def permission_name(ctfname, challenge):
     return permission
 
 def find_role(roles, name):
-	print("looking for", name)
-	for role in roles:
-		print(role.name)
-		if role.name == name:
-			return role
+    print("looking for", name)
+    for role in roles:
+        print(role.name)
+        if role.name == name:
+            return role
+
+async def make_role(guild, role_name):
+    result = await guild.create_role(
+        name=role_name, color=discord.Color(0xffff00))
+    return result
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -54,7 +59,7 @@ class MyClient(discord.Client):
             if name.startswith("✅-"):
                 result = await message.channel.edit(name=name[2:])
         elif message.content.startswith("!help") and message.author != NAME:
-            result = await message.channel.send("Commands supported: !help, !unsolved, !solved, !mkactive")
+            result = await message.channel.send("Commands supported: `!help`, `!unsolved`, `!solved`, `!mkactive`, `!mkchallenge`, `!workingon`,`!stopworking`")
         elif message.content.startswith("!mkchallenge") and message.author != NAME:
             new_challenge_m = re.findall("!mkchallenge ([^ ]+)", message.content)
             if len(new_challenge_m) < 1:
@@ -65,15 +70,14 @@ class MyClient(discord.Client):
                 if new_challenge.lower() == canonical_name(challenge.name).lower():
                     return
             result = await active_ctf.create_text_channel(new_challenge)
-            result = await message.guild.create_role(
-                                name=permission_name(active_ctf.name, new_challenge),
-                                color=discord.Color(0xffff00))
         elif message.content.startswith("!workingon"):
             user = message.author
             challenge = canonical_name(message.channel.name)
             active_ctf = message.channel.category
-            role = find_role(message.guild.roles,
-                              permission_name(active_ctf.name, challenge))
+            role_name = permission_name(active_ctf.name, challenge)
+            role = find_role(message.guild.roles, role_name)
+            if role == None:
+                role = await make_role(message.guild, role_name)
             result = await user.add_roles(role)
         elif message.content.startswith("!stopworking"):
             user = message.author
