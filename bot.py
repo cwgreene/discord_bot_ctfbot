@@ -56,11 +56,11 @@ class MyClient(discord.Client):
                 result = await message.channel.edit(name="✅-" + name)
         elif message.content.startswith("!postsolved") and message.author != NAME:
             name = message.channel.name
-            if not name.startswith("😭-"):
-                result = await message.channel.edit(name="😭-" + name)
+            if not name.startswith("📝-"):
+                result = await message.channel.edit(name="📝-" + name)
         elif message.content.startswith("!unpostsolved") and message.author != NAME:
             name = message.channel.name
-            if name.startswith("😭-"):
+            if name.startswith("📝-"):
                 result = await message.channel.edit(name=name[2:])
         elif message.content.startswith("!unsolved") and message.author != NAME:
             name = message.channel.name
