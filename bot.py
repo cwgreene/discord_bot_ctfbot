@@ -54,11 +54,11 @@ class MyClient(discord.Client):
             name = message.channel.name
             if not name.startswith("✅-"):
                 result = await message.channel.edit(name="✅-" + name)
-        elif message.content.startswith("!postsolved") and message.author != NAME:
+        elif message.content.startswith("!writeup") and message.author != NAME:
             name = message.channel.name
             if not name.startswith("📝-"):
                 result = await message.channel.edit(name="📝-" + name)
-        elif message.content.startswith("!unpostsolved") and message.author != NAME:
+        elif message.content.startswith("!unwriteup") and message.author != NAME:
             name = message.channel.name
             if name.startswith("📝-"):
                 result = await message.channel.edit(name=name[2:])
@@ -94,6 +94,12 @@ class MyClient(discord.Client):
             role = find_role(message.guild.roles,
                               permission_name(active_ctf.name, challenge))
             result = await user.remove_roles(role)
+        elif message.content.startswith("!sos") and message.author != NAME:
+            name = message.channel.name
+            if name.startswith("🆘"):
+                result = await message.channel.edit(name=name[1:])
+            else:
+                result = await message.channel.edit(name="🆘"+name)
              
 client = MyClient()
 client.run(BOT_TOKEN)
