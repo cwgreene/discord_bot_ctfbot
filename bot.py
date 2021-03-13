@@ -9,6 +9,97 @@ BOT_TOKEN = supersecret.getSecret('discord_bot_ctfbot', 'bot_token')
 
 NAME = "ctfbot#9398"
 
+BOT_TOKEN = supersecret.getSecret('discord_bot_samesame', 'bot_token')
+
+class MyClient(commands.Bot):
+    async def on_ready(self):
+        print('Logged on as {0}!'.format(self.user))
+
+client = MyClient("!",
+    description="Enhance strings",
+    help_command=commands.DefaultHelpCommand())
+
+@client.command(name='mkactive', help="enhance string")
+async def mkactive_cmd(ctx):
+    print('Message from {0.author}: {0.content}'.format(message))
+    category_m = re.findall("!mkactive ([^ ]+)", message.content)
+    if len(category_m) < 1:
+        return
+    category_name = category_m[0]
+    for category in message.guild.categories:
+        if category_name.lower() in category.name.lower():
+            print("category object", repr(category))
+            result = await category.edit(position=1)
+
+def activate_channel_name_marker(marker, message):
+    name = message.channel.name
+    if not name.startswith(marker+"-"):
+        result = await message.channel.edit(name=marker+"-" + name)
+
+def deactivate_channel_name_marker(marker, message):
+    name = message.channel.name
+    if name.startswith(marker+"-"):
+        result = await message.channel.edit(name=nane[len(marker+"-"):])
+
+def toggle_channel_name_marker(marker, message):
+    name = message.channel.name
+    if not name.startswith(marker+"-"):
+        result = await message.channel.edit(name=marker+"-" + name)
+    elif:
+        result = await message.channel.edit(name=nane[len(marker+"-"):])
+
+@client.command(name='solved', help="[T] challenge complete")
+async def solved_cmd(ctx):
+    toggle_channel_name_marker("✅", ctx.message):
+
+@client.command(name='onfire', help="[T] we're making a ton of progress!")
+async def onfire_cmd(ctx):
+    toggle_channel_name_marker("🔥", ctx)
+
+@client.command(name='firstblood', help="[T] First problem of the ctf!")
+async def firstblood_cmd(ctx):
+    toggle_channel_name_marker("🩸-", ctx)
+
+@client.command(name='writeup', help="[T] Toggle if a writeup exists")
+async def writeup_cmd(ctx):
+    toggle_channel_name_marker("📝", ctx)
+
+@client.command(name='sos', help="[T] call for help!")
+async def sos_cmd(ctx):
+    toggle_channel_name_marker("🆘", ctx)
+
+@client.command(name='mkchallenge', help="Create a challenge with [name]")
+async def mkchallenge_cmd(ctx):
+    new_challenge_m = re.findall("!mkchallenge ([^ ]+)", message.content)
+    if len(new_challenge_m) < 1:
+        return
+    new_challenge = canonical_name(new_challenge_m[0])
+    active_ctf = message.guild.categories[1]
+    for challenge in active_ctf.text_channels:
+        if new_challenge.lower() == canonical_name(challenge.name).lower():
+            return
+    result = await active_ctf.create_text_channel(new_challenge)
+
+@client.command(name='workingon', help="Start working on a challenge")
+def workingon_cmd(ctx):
+    user = message.author
+    challenge = canonical_name(message.channel.name)
+    active_ctf = message.channel.category
+    role_name = permission_name(active_ctf.name, challenge)
+    role = find_role(message.guild.roles, role_name)
+    if role == None:
+        role = await make_role(message.guild, role_name)
+    result = await user.add_roles(role)
+
+@client.command(name='stopworking', help="stop working on the current challenge")
+def stopworkingon_cmd(ctx):
+    user = message.author
+    challenge = canonical_name(message.channel.name)
+    active_ctf = message.channel.category
+    role = find_role(message.guild.roles,
+                      permission_name(active_ctf.name, challenge))
+    result = await user.remove_roles(role)
+
 def canonical_name(name):
     cname = ""
     for char in name:
@@ -35,81 +126,5 @@ async def make_role(guild, role_name):
         name=role_name, color=discord.Color(0xffff00))
     return result
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
-
-    async def on_message(self, message):
-        print('Message from {0.author}: {0.content}'.format(message))
-        if message.content.startswith("!mkactive") and message.author != NAME:
-            category_m = re.findall("!mkactive ([^ ]+)", message.content)
-            if len(category_m) < 1:
-                return
-            category_name = category_m[0]
-            for category in message.guild.categories:
-                if category_name.lower() in category.name.lower():
-                    print("category object", repr(category))
-                    result = await category.edit(position=1)
-        elif message.content.startswith("!solved") and message.author != NAME:
-            name = message.channel.name
-            if not name.startswith("✅-"):
-                result = await message.channel.edit(name="✅-" + name)
-        elif message.content.startswith("!onfire") and message.author != NAME:
-            name = message.channel.name
-            if not name.startswith("🔥-"):
-                result = await message.channel.edit(name="🔥-" + name)
-        elif message.content.startswith("!firstblood") and message.author != NAME:
-            name = message.channel.name
-            if not name.startswith("🩸-"):
-                result = await message.channel.edit(name="🩸-" + name)
-            else:
-                result = await message.channel.edit(name=name[2:])
-        elif message.content.startswith("!writeup") and message.author != NAME:
-            name = message.channel.name
-            if not name.startswith("📝-"):
-                result = await message.channel.edit(name="📝-" + name)
-        elif message.content.startswith("!unwriteup") and message.author != NAME:
-            name = message.channel.name
-            if name.startswith("📝-"):
-                result = await message.channel.edit(name=name[2:])
-        elif message.content.startswith("!unsolved") and message.author != NAME:
-            name = message.channel.name
-            if name.startswith("✅-"):
-                result = await message.channel.edit(name=name[2:])
-        elif message.content.startswith("!help") and message.author != NAME:
-            result = await message.channel.send("Commands supported: `!help`, `!unsolved`, `!solved`, `!mkactive`, `!mkchallenge`, `!workingon`,`!stopworking`")
-        elif message.content.startswith("!mkchallenge") and message.author != NAME:
-            new_challenge_m = re.findall("!mkchallenge ([^ ]+)", message.content)
-            if len(new_challenge_m) < 1:
-                return
-            new_challenge = canonical_name(new_challenge_m[0])
-            active_ctf = message.guild.categories[1]
-            for challenge in active_ctf.text_channels:
-                if new_challenge.lower() == canonical_name(challenge.name).lower():
-                    return
-            result = await active_ctf.create_text_channel(new_challenge)
-        elif message.content.startswith("!workingon"):
-            user = message.author
-            challenge = canonical_name(message.channel.name)
-            active_ctf = message.channel.category
-            role_name = permission_name(active_ctf.name, challenge)
-            role = find_role(message.guild.roles, role_name)
-            if role == None:
-                role = await make_role(message.guild, role_name)
-            result = await user.add_roles(role)
-        elif message.content.startswith("!stopworking"):
-            user = message.author
-            challenge = canonical_name(message.channel.name)
-            active_ctf = message.channel.category
-            role = find_role(message.guild.roles,
-                              permission_name(active_ctf.name, challenge))
-            result = await user.remove_roles(role)
-        elif message.content.startswith("!sos") and message.author != NAME:
-            name = message.channel.name
-            if name.startswith("🆘"):
-                result = await message.channel.edit(name=name[1:])
-            else:
-                result = await message.channel.edit(name="🆘"+name)
-             
 client = MyClient()
 client.run(BOT_TOKEN)
