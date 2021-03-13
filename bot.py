@@ -54,6 +54,10 @@ class MyClient(discord.Client):
             name = message.channel.name
             if not name.startswith("✅-"):
                 result = await message.channel.edit(name="✅-" + name)
+        elif message.content.startswith("!onfire") and message.author != NAME:
+            name = message.channel.name
+            if not name.startswith("🔥-"):
+                result = await message.channel.edit(name="🔥-" + name)
         elif message.content.startswith("!writeup") and message.author != NAME:
             name = message.channel.name
             if not name.startswith("📝-"):
