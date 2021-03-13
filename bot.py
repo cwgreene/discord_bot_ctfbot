@@ -62,6 +62,8 @@ class MyClient(discord.Client):
             name = message.channel.name
             if not name.startswith("🩸-"):
                 result = await message.channel.edit(name="🩸-" + name)
+            else:
+                result = await message.channel.edit(name=name[2:])
         elif message.content.startswith("!writeup") and message.author != NAME:
             name = message.channel.name
             if not name.startswith("📝-"):
