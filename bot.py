@@ -9,14 +9,12 @@ BOT_TOKEN = supersecret.getSecret('discord_bot_ctfbot', 'bot_token')
 
 NAME = "ctfbot#9398"
 
-BOT_TOKEN = supersecret.getSecret('discord_bot_samesame', 'bot_token')
-
 class MyClient(commands.Bot):
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
 
 client = MyClient("!",
-    description="Enhance strings",
+    description="Ctf bot, the bot for ctfs!",
     help_command=commands.DefaultHelpCommand())
 
 @client.command(name='mkactive', help="enhance string")
@@ -31,42 +29,42 @@ async def mkactive_cmd(ctx):
             print("category object", repr(category))
             result = await category.edit(position=1)
 
-def activate_channel_name_marker(marker, message):
+async def activate_channel_name_marker(marker, message):
     name = message.channel.name
     if not name.startswith(marker+"-"):
         result = await message.channel.edit(name=marker+"-" + name)
 
-def deactivate_channel_name_marker(marker, message):
+async def deactivate_channel_name_marker(marker, message):
     name = message.channel.name
     if name.startswith(marker+"-"):
         result = await message.channel.edit(name=nane[len(marker+"-"):])
 
-def toggle_channel_name_marker(marker, message):
+async def toggle_channel_name_marker(marker, message):
     name = message.channel.name
     if not name.startswith(marker+"-"):
         result = await message.channel.edit(name=marker+"-" + name)
-    elif:
+    else:
         result = await message.channel.edit(name=nane[len(marker+"-"):])
 
 @client.command(name='solved', help="[T] challenge complete")
 async def solved_cmd(ctx):
-    toggle_channel_name_marker("✅", ctx.message):
+    await toggle_channel_name_marker("✅", ctx.mmessage)
 
 @client.command(name='onfire', help="[T] we're making a ton of progress!")
 async def onfire_cmd(ctx):
-    toggle_channel_name_marker("🔥", ctx)
+    await toggle_channel_name_marker("🔥", ctx.message)
 
 @client.command(name='firstblood', help="[T] First problem of the ctf!")
 async def firstblood_cmd(ctx):
-    toggle_channel_name_marker("🩸-", ctx)
+    await toggle_channel_name_marker("🩸-", ctx.message)
 
 @client.command(name='writeup', help="[T] Toggle if a writeup exists")
 async def writeup_cmd(ctx):
-    toggle_channel_name_marker("📝", ctx)
+    await toggle_channel_name_marker("📝", ctx.message)
 
 @client.command(name='sos', help="[T] call for help!")
 async def sos_cmd(ctx):
-    toggle_channel_name_marker("🆘", ctx)
+    await toggle_channel_name_marker("🆘", ctx.messagge)
 
 @client.command(name='mkchallenge', help="Create a challenge with [name]")
 async def mkchallenge_cmd(ctx):
@@ -81,7 +79,7 @@ async def mkchallenge_cmd(ctx):
     result = await active_ctf.create_text_channel(new_challenge)
 
 @client.command(name='workingon', help="Start working on a challenge")
-def workingon_cmd(ctx):
+async def workingon_cmd(ctx):
     user = message.author
     challenge = canonical_name(message.channel.name)
     active_ctf = message.channel.category
@@ -92,7 +90,7 @@ def workingon_cmd(ctx):
     result = await user.add_roles(role)
 
 @client.command(name='stopworking', help="stop working on the current challenge")
-def stopworkingon_cmd(ctx):
+async def stopworkingon_cmd(ctx):
     user = message.author
     challenge = canonical_name(message.channel.name)
     active_ctf = message.channel.category
@@ -126,5 +124,4 @@ async def make_role(guild, role_name):
         name=role_name, color=discord.Color(0xffff00))
     return result
 
-client = MyClient()
 client.run(BOT_TOKEN)
