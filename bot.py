@@ -17,7 +17,7 @@ client = MyClient("!",
     description="Ctf bot, the bot for ctfs!",
     help_command=commands.DefaultHelpCommand())
 
-@client.command(name='mkactive', help="enhance string")
+@client.command(name='mkactive', help="brings the specified competition to the top of the channel list")
 async def mkactive_cmd(ctx):
     print('Message from {0.author}: {0.content}'.format(message))
     category_m = re.findall("!mkactive ([^ ]+)", message.content)
