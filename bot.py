@@ -62,6 +62,10 @@ async def firstblood_cmd(ctx):
 async def writeup_cmd(ctx):
     await toggle_channel_name_marker("📝", ctx.message)
 
+@client.command(name='late', help="[T] Toggle if challenge was solved afterwards")
+async def writeup_cmd(ctx):
+    await toggle_channel_name_marker("🕑", ctx.message)
+
 @client.command(name='sos', help="[T] call for help!")
 async def sos_cmd(ctx):
     await toggle_channel_name_marker("🆘", ctx.messagge)
