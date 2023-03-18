@@ -19,6 +19,7 @@ client = MyClient("!",
 
 @client.command(name='mkactive', help="brings the specified competition to the top of the channel list")
 async def mkactive_cmd(ctx):
+    message = ctx.message
     print('Message from {0.author}: {0.content}'.format(message))
     category_m = re.findall("!mkactive ([^ ]+)", message.content)
     if len(category_m) < 1:
